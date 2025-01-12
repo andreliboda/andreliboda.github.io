@@ -106,9 +106,9 @@ function init() {
     renderer.domElement.addEventListener('wheel', onMouseWheel, false);
     
     // Add touch events for pinch zoom
-    renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-    renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-    renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+    renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+    renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
+    renderer.domElement.addEventListener('touchend', onTouchEnd, { passive: false });
 
     // Add this after setting up the card mesh
     createParticles();
@@ -124,6 +124,11 @@ function init() {
     createBackgroundStars();
 
     createFloatingSideElements();
+
+    // Add this to prevent default touch behavior globally
+    document.addEventListener('touchmove', function(event) {
+        event.preventDefault();
+    }, { passive: false });
 }
 
 function onPointerDown(event) {
@@ -300,6 +305,8 @@ function getTouchDistance(event) {
 }
 
 function onTouchStart(event) {
+    event.preventDefault(); // Prevent default touch behavior
+    
     if (event.touches.length === 2) {
         previousTouchDistance = getTouchDistance(event);
     } else {
@@ -308,6 +315,8 @@ function onTouchStart(event) {
 }
 
 function onTouchMove(event) {
+    event.preventDefault(); // Prevent default touch behavior
+    
     if (event.touches.length === 2) {
         // Handle pinch zoom
         const currentTouchDistance = getTouchDistance(event);
@@ -324,6 +333,8 @@ function onTouchMove(event) {
 }
 
 function onTouchEnd(event) {
+    event.preventDefault(); // Prevent default touch behavior
+    
     if (event.touches.length < 2) {
         previousTouchDistance = 0;
     }
