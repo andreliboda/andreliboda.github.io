@@ -30,6 +30,38 @@ const HEART_COLORS = [
     new THREE.Color("#ff699b"), // Dark pink
 ];
 
+function getInvitationCode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('code');
+}
+
+function getInvitationTextures() {
+    const code = getInvitationCode();
+    if (!code || !INVITATIONS[code]) {
+        const availableInvitations = Object.keys(INVITATIONS);
+        const errorElement = document.getElementById('error-message');
+        errorElement.innerHTML = `
+            <h3 style="margin-bottom: 15px;">Select an Invitation:</h3>
+            <div id="invitation-buttons">
+                ${availableInvitations.map(code => `
+                    <button 
+                        onclick="window.location.href='?code=${code}'"
+                        style="margin: 5px; padding: 10px 20px; 
+                               background: #042c41; color: white; 
+                               border: none; border-radius: 5px;
+                               cursor: pointer;
+                               transition: background 0.2s">
+                        ${code}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        errorElement.style.display = 'block';
+        throw new Error('Please select an invitation code');
+    }
+    return INVITATIONS[code];
+}
+
 if (typeof THREE === 'undefined') {
     console.error('Three.js is not loaded!');
 }
@@ -59,26 +91,29 @@ function init() {
     // Load textures
     const textureLoader = new THREE.TextureLoader();
     
+    // Load textures based on invitation code
+    const invitationTextures = getInvitationTextures();
+    
     // Create a group to hold both sides
     const group = new THREE.Group();
     
     // Front plane
-    const frontTexture = textureLoader.load('front_texture.PNG');
+    const frontTexture = textureLoader.load(invitationTextures.front);
     const frontMaterial = new THREE.MeshBasicMaterial({ 
         map: frontTexture,
         side: THREE.FrontSide
     });
     const frontPlane = new THREE.Mesh(geometry, frontMaterial);
     
-    // Back plane (rotated 180 degrees)
-    const backTexture = textureLoader.load('back_texture.PNG');
+    // Back plane
+    const backTexture = textureLoader.load(invitationTextures.back);
     const backMaterial = new THREE.MeshBasicMaterial({ 
         map: backTexture,
         side: THREE.FrontSide
     });
     const backPlane = new THREE.Mesh(geometry, backMaterial);
-    backPlane.rotation.y = Math.PI; // Rotate 180 degrees
-    backPlane.position.z = -0.01; // Slight offset to prevent z-fighting
+    backPlane.rotation.y = Math.PI;
+    backPlane.position.z = -0.01;
 
     // Add both planes to the group
     group.add(frontPlane);
