@@ -59,6 +59,10 @@ const INVITATIONS = {
         front: 'invitations/claudiacris_front.PNG',
         back: 'invitations/claudiacris_back.PNG'
     },
+    'cristinajan': {
+        front: 'invitations/cristinajan_front.PNG',
+        back: 'invitations/cristinajan_back.PNG'
+    },
     'daniel': {
         front: 'invitations/daniel_front.PNG',
         back: 'invitations/daniel_back.PNG'
